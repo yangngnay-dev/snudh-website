@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서울대학교치과병원 SNUDH</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --blue: #1a5eb8; --blue-dark: #0d3f8a; --blue-light: #2b7de9;
+    --blue-pale: #e8f1fb; --accent: #00aaff; --white: #fff;
+    --gray-100: #f4f6fa; --gray-200: #e8ecf2; --gray-400: #9aa3b2;
+    --gray-700: #3a4256; --text: #1a1e2e;
+    --radius: 12px; --tr: .3s cubic-bezier(.4,0,.2,1);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans KR', sans-serif; color: var(--text); background: #fff; overflow-x: hidden; }
+
+  /* TOP BAR */
+  .top-bar { background: #0b2e6a; padding: 6px 0; font-size: 12px; color: rgba(255,255,255,.7); }
+  .top-bar .inner { max-width:1200px; margin:0 auto; padding:0 24px; display:flex; justify-content:flex-end; gap:20px; }
+  .top-bar a { color:inherit; text-decoration:none; transition:color var(--tr); }
+  .top-bar a:hover { color:#fff; }
+
+  /* HEADER */
+  header { position:sticky; top:0; z-index:1000; background:rgba(255,255,255,.97); backdrop-filter:blur(12px); border-bottom:1px solid var(--gray-200); transition:box-shadow var(--tr); }
+  header.scrolled { box-shadow:0 4px 24px rgba(26,94,184,.13); }
+  .header-inner { max-width:1200px; margin:0 auto; padding:0 24px; display:flex; align-items:center; height:68px; gap:32px; }
+  .logo { display:flex; align-items:center; text-decoration:none; flex-shrink:0; transition:opacity var(--tr); }
+  .logo:hover { opacity:.85; }
+  .logo img { height:44px; width:auto; object-fit:contain; }
+  nav { display:flex; align-items:center; gap:2px; margin-left:auto; }
+  .nav-item { position:relative; padding:8px 15px; font-size:14px; font-weight:500; color:var(--gray-700); text-decoration:none; border-radius:8px; transition:color var(--tr), background var(--tr); cursor:pointer; white-space:nowrap; }
+  .nav-item::after { content:''; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:0; height:2px; background:var(--blue); border-radius:2px; transition:width var(--tr); }
+  .nav-item:hover { color:var(--blue); background:var(--blue-pale); }
+  .nav-item:hover::after { width:55%; }
+  .nav-dropdown { position:relative; }
+  .dropdown-menu { position:absolute; top:calc(100% + 8px); left:50%; transform:translateX(-50%) translateY(-8px); background:#fff; border-radius:var(--radius); padding:8px; box-shadow:0 16px 48px rgba(26,94,184,.15); border:1px solid var(--gray-200); min-width:150px; opacity:0; pointer-events:none; transition:opacity var(--tr), transform var(--tr); z-index:200; }
+  .nav-dropdown:hover .dropdown-menu { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0); }
+  .dropdown-menu a { display:block; padding:8px 14px; font-size:13px; color:var(--gray-700); text-decoration:none; border-radius:6px; transition:background var(--tr), color var(--tr); white-space:nowrap; }
+  .dropdown-menu a:hover { background:var(--blue-pale); color:var(--blue); }
+  .btn-login { margin-left:8px; padding:8px 20px; background:var(--blue); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:background var(--tr), transform var(--tr), box-shadow var(--tr); font-family:'Noto Sans KR',sans-serif; }
+  .btn-login:hover { background:var(--blue-dark); transform:translateY(-1px); box-shadow:0 4px 16px rgba(26,94,184,.3); }
+
+  /* HERO SLIDER */
+  .hero { position:relative; height:580px; overflow:hidden; background:#0a2e6b; }
+  .slides { position:absolute; inset:0; }
+  .slide { position:absolute; inset:0; opacity:0; transition:opacity 1.2s ease; }
+  .slide.active { opacity:1; }
+  .slide img { width:100%; height:100%; object-fit:cover; object-position:center; }
+  .slide-overlay { position:absolute; inset:0; background:linear-gradient(to right, rgba(5,20,60,.80) 35%, rgba(5,20,60,.25) 100%); }
+  .hero-content { position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:0 24px; height:100%; display:flex; flex-direction:column; justify-content:center; gap:20px; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,.12); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.25); color:rgba(255,255,255,.9); font-size:13px; font-weight:500; padding:6px 14px; border-radius:100px; width:fit-content; animation:fadeUp .8s ease both; }
+  .hero-badge span { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.7} }
+  .hero-title { font-size:clamp(34px,5vw,58px); font-weight:900; color:#fff; line-height:1.15; letter-spacing:-1px; animation:fadeUp .9s .1s ease both; }
+  .hero-title em { color:var(--accent); font-style:normal; }
+  .hero-desc { font-size:15px; color:rgba(255,255,255,.75); max-width:400px; line-height:1.7; animation:fadeUp .9s .2s ease both; }
+  .hero-cta { display:flex; gap:12px; animation:fadeUp .9s .3s ease both; }
+  .btn-primary { padding:14px 28px; background:var(--accent); color:#fff; border:none; border-radius:10px; font-size:15px; font-weight:700; cursor:pointer; transition:all var(--tr); font-family:'Noto Sans KR',sans-serif; box-shadow:0 4px 20px rgba(0,170,255,.4); }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,170,255,.5); background:#00bbff; }
+  .btn-ghost { padding:14px 28px; background:transparent; color:#fff; border:2px solid rgba(255,255,255,.4); border-radius:10px; font-size:15px; font-weight:600; cursor:pointer; transition:all var(--tr); font-family:'Noto Sans KR',sans-serif; }
+  .btn-ghost:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.7); }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  .slide-dots { position:absolute; bottom:24px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:3; }
+  .dot { width:8px; height:8px; background:rgba(255,255,255,.4); border-radius:4px; cursor:pointer; transition:all var(--tr); }
+  .dot.active { background:#fff; width:24px; }
+  .slide-arrows { position:absolute; top:50%; transform:translateY(-50%); width:100%; display:flex; justify-content:space-between; padding:0 16px; z-index:3; pointer-events:none; }
+  .slide-arrow { width:40px; height:40px; background:rgba(255,255,255,.15); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.2); border-radius:50%; color:#fff; font-size:16px; cursor:pointer; pointer-events:all; display:flex; align-items:center; justify-content:center; transition:all var(--tr); }
+  .slide-arrow:hover { background:rgba(255,255,255,.3); transform:scale(1.1); }
+  .hero-scroll { position:absolute; bottom:28px; right:40px; display:flex; flex-direction:column; align-items:center; gap:6px; color:rgba(255,255,255,.5); font-size:11px; z-index:3; }
+  .scroll-dot { width:20px; height:32px; border:2px solid rgba(255,255,255,.3); border-radius:10px; display:flex; justify-content:center; padding-top:5px; }
+  .scroll-dot::after { content:''; width:4px; height:8px; background:rgba(255,255,255,.5); border-radius:2px; animation:scrollAnim 1.6s infinite; }
+  @keyframes scrollAnim { 0%,100%{transform:translateY(0);opacity:1} 80%{transform:translateY(10px);opacity:0} }
+
+  /* TICKER */
+  .ticker { background:#fff; border-bottom:1px solid var(--gray-200); }
+  .ticker-inner { max-width:1200px; margin:0 auto; padding:0 24px; display:flex; align-items:center; height:52px; }
+  .ticker-tabs { display:flex; flex-shrink:0; border-right:1px solid var(--gray-200); padding-right:20px; margin-right:20px; gap:2px; }
+  .ticker-tab { padding:6px 12px; font-size:13px; font-weight:600; color:var(--gray-400); cursor:pointer; border-radius:6px; transition:all var(--tr); }
+  .ticker-tab.active { color:var(--blue); background:var(--blue-pale); }
+  .ticker-content { overflow:hidden; flex:1; }
+  .ticker-text { display:flex; gap:60px; animation:tickerScroll 22s linear infinite; white-space:nowrap; }
+  .ticker-text span { font-size:13.5px; color:var(--gray-700); }
+  @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* SECTIONS */
+  section { padding:80px 0; }
+  .inner { max-width:1200px; margin:0 auto; padding:0 24px; }
+  .section-title { font-size:clamp(22px,3vw,32px); font-weight:800; text-align:center; margin-bottom:12px; color:var(--text); }
+  .section-title span { color:var(--blue); }
+  .section-sub { text-align:center; color:var(--gray-400); font-size:14px; line-height:1.8; margin-bottom:48px; max-width:680px; margin-left:auto; margin-right:auto; }
+
+  /* GALLERY */
+  .gallery-wrap { overflow:hidden; margin:0 -24px; }
+  .gallery-track { display:flex; gap:16px; padding:8px 24px; animation:galleryScroll 28s linear infinite; width:max-content; }
+  .gallery-track:hover { animation-play-state:paused; }
+  @keyframes galleryScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .gallery-item { flex-shrink:0; border-radius:12px; overflow:hidden; cursor:pointer; transition:transform var(--tr), box-shadow var(--tr); }
+  .gallery-item img { display:block; height:200px; width:auto; object-fit:cover; transition:transform .5s ease; }
+  .gallery-item:hover { transform:scale(1.04); box-shadow:0 12px 32px rgba(26,94,184,.18); }
+  .gallery-item:hover img { transform:scale(1.08); }
+  .gallery-cta { text-align:center; margin-top:36px; }
+  .btn-outline { padding:12px 28px; background:transparent; color:var(--blue); border:2px solid var(--blue); border-radius:10px; font-size:14.5px; font-weight:700; cursor:pointer; transition:all var(--tr); font-family:'Noto Sans KR',sans-serif; }
+  .btn-outline:hover { background:var(--blue); color:#fff; transform:translateY(-2px); box-shadow:0 6px 20px rgba(26,94,184,.25); }
+
+  /* STATS */
+  .stats { background:linear-gradient(135deg, #0a2e6b 0%, var(--blue) 55%, var(--blue-light) 100%); position:relative; overflow:hidden; }
+  .stats::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 80% 50%, rgba(0,170,255,.2) 0%, transparent 60%); }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:rgba(255,255,255,.1); border-radius:16px; overflow:hidden; position:relative; }
+  .stat-item { background:rgba(255,255,255,.06); padding:40px 24px; display:flex; flex-direction:column; align-items:center; gap:8px; transition:background var(--tr); cursor:default; }
+  .stat-item:hover { background:rgba(255,255,255,.14); }
+  .stat-label { font-size:13px; color:rgba(255,255,255,.65); font-weight:500; }
+  .stat-number { font-family:'Montserrat',sans-serif; font-size:clamp(30px,4vw,46px); font-weight:800; color:#fff; letter-spacing:-1px; transition:color var(--tr), transform var(--tr); }
+  .stat-item:hover .stat-number { color:var(--accent); transform:scale(1.05); }
+  .stat-unit { font-size:12px; color:rgba(255,255,255,.5); }
+
+  /* FEATURES */
+  .features { background:var(--gray-100); }
+  .feature-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .feature-card { background:#fff; border-radius:16px; padding:28px 22px; border:1px solid var(--gray-200); transition:all var(--tr); cursor:pointer; position:relative; overflow:hidden; }
+  .feature-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--blue), var(--accent)); transform:scaleX(0); transform-origin:left; transition:transform var(--tr); }
+  .feature-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(26,94,184,.12); border-color:var(--blue-pale); }
+  .feature-card:hover::before { transform:scaleX(1); }
+  .feature-icon { width:52px; height:52px; background:var(--blue-pale); border-radius:12px; display:flex; align-items:center; justify-content:center; margin-bottom:16px; font-size:22px; transition:background var(--tr), transform var(--tr); }
+  .feature-card:hover .feature-icon { background:var(--blue); transform:scale(1.1) rotate(-5deg); }
+  .feature-card:hover .feature-icon svg { filter:brightness(10); }
+  .feature-title { font-size:15px; font-weight:700; margin-bottom:8px; }
+  .feature-desc { font-size:13px; color:var(--gray-400); line-height:1.65; }
+
+  /* LECTURE */
+  .lecture { background:var(--gray-100); }
+  .lecture-wrap { display:grid; grid-template-columns:1fr 1fr; gap:20px; max-width:820px; margin:0 auto; }
+  .lecture-card { border-radius:16px; overflow:hidden; cursor:pointer; transition:transform var(--tr), box-shadow var(--tr); }
+  .lecture-card:hover { transform:translateY(-6px); box-shadow:0 20px 48px rgba(26,94,184,.18); }
+  .lecture-photo { width:100%; display:block; object-fit:cover; height:320px; object-position:top; }
+  .lecture-dark { background:var(--blue-dark); display:flex; flex-direction:column; justify-content:space-between; padding:32px; min-height:320px; }
+  .lecture-dark-tag { font-size:11px; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,.5); text-transform:uppercase; }
+  .lecture-dark-title { font-size:22px; font-weight:800; color:#fff; line-height:1.35; margin-top:12px; }
+  .lecture-dark-sub { font-size:13px; color:rgba(255,255,255,.6); margin-top:6px; }
+  .btn-watch { margin-top:24px; padding:12px 22px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; transition:all var(--tr); width:fit-content; font-family:'Noto Sans KR',sans-serif; }
+  .btn-watch:hover { background:#00bbff; transform:scale(1.05); }
+
+  /* DEPARTMENTS */
+  .dept-wrap { display:grid; grid-template-columns:1fr 1fr; min-height:420px; }
+  .dept-left { background:linear-gradient(135deg, #0a2050 0%, var(--blue) 100%); padding:56px 48px; display:flex; flex-direction:column; justify-content:center; gap:14px; }
+  .dept-label { font-size:11px; color:rgba(255,255,255,.55); font-weight:700; letter-spacing:2.5px; text-transform:uppercase; }
+  .dept-list { display:flex; flex-direction:column; gap:2px; }
+  .dept-item { font-size:clamp(15px,2vw,20px); font-weight:700; color:rgba(255,255,255,.75); padding:7px 0; border-bottom:1px solid rgba(255,255,255,.08); cursor:pointer; transition:color var(--tr), padding-left var(--tr); display:flex; align-items:center; }
+  .dept-item .arrow { opacity:0; transition:opacity var(--tr); margin-right:6px; color:var(--accent); font-size:13px; }
+  .dept-item:hover { color:#fff; padding-left:6px; }
+  .dept-item:hover .arrow { opacity:1; }
+  .btn-dept { margin-top:16px; padding:11px 22px; background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.3); border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; width:fit-content; transition:all var(--tr); font-family:'Noto Sans KR',sans-serif; }
+  .btn-dept:hover { background:rgba(255,255,255,.22); }
+  .dept-right { position:relative; overflow:hidden; }
+  .dept-right img { width:100%; height:100%; object-fit:cover; transition:transform .6s ease; }
+  .dept-right:hover img { transform:scale(1.04); }
+  .dept-right-overlay { position:absolute; inset:0; background:linear-gradient(to right, rgba(5,20,60,.35), transparent); }
+
+  /* GLOBAL */
+  .global { background:var(--gray-100); }
+  .global-desc { max-width:640px; margin:0 auto 48px; text-align:center; font-size:14px; color:var(--gray-700); line-height:1.85; }
+  .global-grid { display:grid; grid-template-columns:repeat(3,1fr) 160px; gap:16px; align-items:start; }
+  .global-card { border-radius:16px; overflow:hidden; position:relative; cursor:pointer; transition:transform var(--tr), box-shadow var(--tr); }
+  .global-card:hover { transform:translateY(-6px) scale(1.02); box-shadow:0 20px 48px rgba(26,94,184,.18); }
+  .global-card img { width:100%; height:220px; object-fit:cover; object-position:center top; display:block; transition:transform .5s; }
+  .global-card:hover img { transform:scale(1.07); }
+  .global-card-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(5,20,60,.75) 0%, transparent 55%); display:flex; flex-direction:column; justify-content:flex-end; padding:16px; }
+  .global-badge { display:inline-block; padding:3px 9px; background:var(--blue); color:#fff; font-size:11px; font-weight:700; border-radius:4px; margin-bottom:6px; width:fit-content; }
+  .global-card-title { font-size:13.5px; font-weight:700; color:#fff; line-height:1.35; }
+  .global-aside { display:flex; flex-direction:column; gap:8px; }
+  .global-link { padding:11px 14px; background:#fff; border-radius:9px; border:1px solid var(--gray-200); font-size:12.5px; font-weight:600; color:var(--blue); cursor:pointer; transition:all var(--tr); text-decoration:none; display:block; }
+  .global-link:hover { background:var(--blue); color:#fff; border-color:var(--blue); transform:translateX(3px); }
+  .global-link-more { padding:11px 14px; background:var(--blue); color:#fff; border-radius:9px; font-size:12.5px; font-weight:700; cursor:pointer; text-align:center; transition:all var(--tr); text-decoration:none; display:block; }
+  .global-link-more:hover { background:var(--blue-dark); }
+
+  /* PARTNERS */
+  .partners { background:#fff; padding:40px 0; border-top:1px solid var(--gray-200); }
+  .partners-track-wrap { overflow:hidden; }
+  .partners-track { display:flex; gap:28px; align-items:center; animation:galleryScroll 20s linear infinite; width:max-content; padding:8px 0; }
+  .partner-logo { width:90px; height:40px; background:var(--gray-100); border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'Montserrat',sans-serif; font-weight:700; font-size:10.5px; color:var(--gray-400); flex-shrink:0; transition:all var(--tr); }
+  .partner-logo:hover { background:var(--blue-pale); color:var(--blue); transform:scale(1.05); }
+
+  /* FOOTER */
+  footer { background:#0e1828; color:rgba(255,255,255,.6); padding:52px 0 28px; }
+  .footer-top { display:grid; grid-template-columns:220px 1fr 1fr auto; gap:40px; margin-bottom:36px; max-width:1200px; margin-left:auto; margin-right:auto; padding:0 24px; }
+  .footer-logo-img { height:38px; width:auto; margin-bottom:14px; opacity:.9; }
+  .footer-tagline { font-size:12.5px; line-height:1.75; max-width:180px; color:rgba(255,255,255,.5); }
+  .footer-col h4 { font-size:13px; font-weight:700; color:#fff; margin-bottom:14px; }
+  .footer-col a { display:block; font-size:13px; margin-bottom:8px; color:rgba(255,255,255,.5); text-decoration:none; transition:color var(--tr); }
+  .footer-col a:hover { color:var(--accent); }
+  .footer-contact p { font-size:12.5px; line-height:1.9; }
+  .footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:20px; display:flex; justify-content:space-between; align-items:center; max-width:1200px; margin:0 auto; padding-left:24px; padding-right:24px; }
+  .footer-bottom p { font-size:11.5px; color:rgba(255,255,255,.3); }
+
+  /* REVEAL */
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .rd1 { transition-delay:.1s; } .rd2 { transition-delay:.2s; } .rd3 { transition-delay:.3s; } .rd4 { transition-delay:.4s; }
+
+  /* BACK TO TOP */
+  .btt { position:fixed; bottom:28px; right:28px; z-index:999; width:44px; height:44px; background:var(--blue); color:#fff; border:none; border-radius:12px; font-size:18px; cursor:pointer; box-shadow:0 4px 16px rgba(26,94,184,.3); opacity:0; pointer-events:none; transition:all var(--tr); display:flex; align-items:center; justify-content:center; }
+  .btt.visible { opacity:1; pointer-events:all; }
+  .btt:hover { background:var(--blue-dark); transform:translateY(-3px); }
+
+  @media(max-width:900px) {
+    .feature-grid { grid-template-columns:repeat(2,1fr); }
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .global-grid { grid-template-columns:1fr 1fr; }
+    .dept-wrap { grid-template-columns:1fr; }
+    .footer-top { grid-template-columns:1fr 1fr; }
+  }
+  @media(max-width:640px) {
+    .feature-grid, .lecture-wrap { grid-template-columns:1fr; }
+    nav .nav-item:not(.btn-login) { display:none; }
+    .global-grid { grid-template-columns:1fr; }
+    .footer-top { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="inner">
+    <a href="#">관악서울대학교치과병원</a>
+    <a href="#">분당서울대학교치과병원</a>
+    <a href="#">서울특별시 공공치과지원센터</a>
+    <a href="#" style="font-weight:700;color:#fff;">ENGLISH</a>
+  </div>
+</div>
+
+<header id="header">
+  <div class="header-inner">
+    <a href="#" class="logo"><img src="images/header_logo.png" alt="서울대학교치과병원"></a>
+    <nav>
+      <div class="nav-dropdown"><span class="nav-item">병원소식 ▾</span><div class="dropdown-menu"><a href="#">공지사항</a><a href="#">뉴스</a><a href="#">이벤트</a></div></div>
+      <div class="nav-dropdown"><span class="nav-item">진료안내 ▾</span><div class="dropdown-menu"><a href="#">진료과 안내</a><a href="#">의료진 소개</a><a href="#">진료 예약</a></div></div>
+      <div class="nav-dropdown"><span class="nav-item">진료센터 ▾</span><div class="dropdown-menu"><a href="#">특화 클리닉</a><a href="#">임플란트센터</a><a href="#">교정클리닉</a></div></div>
+      <div class="nav-dropdown"><span class="nav-item">고객서비스 ▾</span><div class="dropdown-menu"><a href="#">온라인 예약</a><a href="#">증명서 발급</a><a href="#">FAQ</a></div></div>
+      <span class="nav-item">공공뱅크</span>
+      <button class="btn-login">로그인</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="slides">
+    <div class="slide active"><img src="images/main_banner_2.png" alt="배너2"><div class="slide-overlay"></div></div>
+    <div class="slide"><img src="images/main_banner_3.png" alt="배너3"><div class="slide-overlay"></div></div>
+    <div class="slide"><img src="images/main_banner_4.png" alt="배너4"><div class="slide-overlay"></div></div>
+    <div class="slide"><img src="images/main_banner_5.png" alt="배너5"><div class="slide-overlay"></div></div>
+    <div class="slide"><img src="images/main_banner_6.png" alt="배너6"><div class="slide-overlay"></div></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><span></span> 세계 정상을 선도하는 치과병원</div>
+    <h1 class="hero-title">서울대학교<br><em>치과병원</em></h1>
+    <p class="hero-desc">국내 최초 &amp; 최고의 치과 전문 병원으로, 세계적 수준의 의료서비스와 연구를 통해 환자 중심의 진료를 실현합니다.</p>
+    <div class="hero-cta">
+      <button class="btn-primary">진료 안내/예약</button>
+      <button class="btn-ghost">병원 소개 보기</button>
+    </div>
+  </div>
+  <div class="slide-arrows">
+    <button class="slide-arrow" id="prevBtn">&#8592;</button>
+    <button class="slide-arrow" id="nextBtn">&#8594;</button>
+  </div>
+  <div class="slide-dots" id="dots"></div>
+  <div class="hero-scroll"><div class="scroll-dot"></div><span style="font-size:10px;letter-spacing:1px;">SCROLL</span></div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-tabs">
+      <div class="ticker-tab active" onclick="switchTab(this,'notice')">공지사항</div>
+      <div class="ticker-tab" onclick="switchTab(this,'news')">뉴스</div>
+    </div>
+    <div class="ticker-content">
+      <div class="ticker-text" id="tickerText">
+        <span>2035년도 교육수련 공고 — 대학원 입시 안내</span><span>2025년 봄 공개 강좌 수강 신청 접수 중</span><span>고령화 커뮤니티 지원 구강 건강 검진 실시</span><span>임플란트 신기술 세미나 — 3월 25일 개최</span>
+        <span>2035년도 교육수련 공고 — 대학원 입시 안내</span><span>2025년 봄 공개 강좌 수강 신청 접수 중</span><span>고령화 커뮤니티 지원 구강 건강 검진 실시</span><span>임플란트 신기술 세미나 — 3월 25일 개최</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="inner">
+    <h2 class="section-title reveal">국가가 인증한 <span>'가족친화 우수기관'</span></h2>
+    <p class="section-sub reveal rd1">우리나라 가장 오래된 치과대학병원인 서울대학교 90년의 역사를 간직한 전통 속에서 국내 최초의 국가지정치과병원으로, 끊임없이 앞서 나가는 역할을 위한 역사 중심 사업을 운영합니다. 지난 2017년, 가족친화인증을 통해 확인받았으며 2020년부터는 기관 최초 ESG 경영을 선도하며 지속가능한 공공의료기관 기준을 만들어 가고 있습니다.</p>
+    <div class="gallery-wrap reveal rd2">
+      <div class="gallery-track">
+        <div class="gallery-item"><img src="images/a_card_2.png" alt="갤러리1"></div>
+        <div class="gallery-item"><img src="images/a_card_3.png" alt="갤러리2"></div>
+        <div class="gallery-item"><img src="images/a_card_4.png" alt="갤러리3"></div>
+        <div class="gallery-item"><img src="images/a_card_5.png" alt="갤러리4"></div>
+        <div class="gallery-item"><img src="images/a_card_1.png" alt="갤러리5"></div>
+        <div class="gallery-item"><img src="images/a_card_2.png" alt="갤러리1"></div>
+        <div class="gallery-item"><img src="images/a_card_3.png" alt="갤러리2"></div>
+        <div class="gallery-item"><img src="images/a_card_4.png" alt="갤러리3"></div>
+        <div class="gallery-item"><img src="images/a_card_5.png" alt="갤러리4"></div>
+        <div class="gallery-item"><img src="images/a_card_1.png" alt="갤러리5"></div>
+      </div>
+    </div>
+    <div class="gallery-cta reveal rd3"><button class="btn-outline">자세히 보기</button></div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="inner">
+    <div class="stats-grid">
+      <div class="stat-item"><div class="stat-label">치아미백 시술</div><div class="stat-number" data-target="99086">0</div><div class="stat-unit">Times +</div></div>
+      <div class="stat-item"><div class="stat-label">교정 진료</div><div class="stat-number" data-target="162399">0</div><div class="stat-unit">Times +</div></div>
+      <div class="stat-item"><div class="stat-label">국외 고객 시술</div><div class="stat-number" data-target="23">0</div><div class="stat-unit">Countries</div></div>
+      <div class="stat-item"><div class="stat-label">임플란트 시술</div><div class="stat-number" data-target="123424">0</div><div class="stat-unit">Times +</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="inner">
+    <h2 class="section-title reveal">병원 주요 서비스</h2>
+    <p class="section-sub reveal rd1">서울대학교치과병원이 제공하는 전문적이고 다양한 의료 서비스를 소개합니다.</p>
+    <div class="feature-grid">
+      <div class="feature-card reveal rd1"><div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#1a5eb8" stroke-width="2" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div><div class="feature-title">온라인 강좌</div><div class="feature-desc">세계적 수준의 치과 전문의들이 제작한 고품질 온라인 교육 콘텐츠</div></div>
+      <div class="feature-card reveal rd2"><div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#1a5eb8" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div><div class="feature-title">진료 예약</div><div class="feature-desc">간편한 온라인 예약 시스템으로 대기 없이 편리하게 진료를 예약하세요</div></div>
+      <div class="feature-card reveal rd3"><div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#1a5eb8" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="feature-title">전문의 상담</div><div class="feature-desc">분야별 최고 전문의와 1:1 맞춤 상담으로 최적의 치료 계획을 수립합니다</div></div>
+      <div class="feature-card reveal rd4"><div class="feature-icon"><svg width="24" height="24" fill="none" stroke="#1a5eb8" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="feature-title">첨단 의료 장비</div><div class="feature-desc">국내 최신 디지털 치과 장비를 통한 정확하고 안전한 진단과 치료</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="lecture">
+  <div class="inner">
+    <h2 class="section-title reveal">서울대학교치과병원 <span>온라인 강좌</span></h2>
+    <p class="section-sub reveal rd1">세계 최고 수준의 교수진이 전하는 전문 치과 지식을 온라인으로 만나보세요</p>
+    <div class="lecture-wrap reveal rd2">
+      <div class="lecture-card"><img class="lecture-photo" src="images/b_lecture.jpg" alt="강좌 교수"></div>
+      <div class="lecture-card"><div class="lecture-dark"><div><div class="lecture-dark-tag">온라인 강좌</div><div class="lecture-dark-title">이갈이와<br>이악물기</div><div class="lecture-dark-sub">구마사 조정완 교수</div></div><button class="btn-watch">수강하러 가기 →</button></div></div>
+    </div>
+  </div>
+</section>
+
+<div>
+  <div class="dept-wrap">
+    <div class="dept-left">
+      <div class="dept-label">진료과 / 센터</div>
+      <div class="dept-list">
+        <div class="dept-item"><span class="arrow">→</span>구강내과</div>
+        <div class="dept-item"><span class="arrow">→</span>영상치의학과</div>
+        <div class="dept-item"><span class="arrow">→</span>구강악안면외과</div>
+        <div class="dept-item"><span class="arrow">→</span>치주과</div>
+        <div class="dept-item"><span class="arrow">→</span>치과보존과</div>
+        <div class="dept-item"><span class="arrow">→</span>임플란트진료센터</div>
+        <div class="dept-item"><span class="arrow">→</span>원내생진료센터</div>
+      </div>
+      <button class="btn-dept">진료과 바로가기</button>
+    </div>
+    <div class="dept-right"><img src="images/main_banner_1.png" alt="병원 내부"><div class="dept-right-overlay"></div></div>
+  </div>
+</div>
+
+<section class="global">
+  <div class="inner">
+    <h2 class="section-title reveal">글로벌한 <span>선두 주자</span></h2>
+    <p class="global-desc reveal rd1">서울대학교치과병원은 관악서울대학교치과병원, 분당서울대학교치과병원, 서울특별시공공치과지원센터 등 세계 수준의 서비스 네트워크를 통해 국가공공의료 선두에서 각 지역에 다양한 기여를 하고 있습니다.</p>
+    <div class="global-grid reveal rd2">
+      <div class="global-card"><img src="images/c_hospital_1.png" alt="관악병원"><div class="global-card-overlay"><span class="global-badge">본원</span><div class="global-card-title">관악서울대학교<br>치과병원</div></div></div>
+      <div class="global-card"><img src="images/c_hospital_2.png" alt="분당병원"><div class="global-card-overlay"><span class="global-badge">분당</span><div class="global-card-title">분당서울대학교<br>치과병원</div></div></div>
+      <div class="global-card"><img src="images/c_hospital_3.png" alt="공공센터"><div class="global-card-overlay"><span class="global-badge">공공</span><div class="global-card-title">서울특별시공공<br>치과지원센터</div></div></div>
+      <div class="global-aside">
+        <a class="global-link" href="#">관악 병원 신청</a>
+        <a class="global-link" href="#">관악의원 신청</a>
+        <a class="global-link" href="#">세대예약</a>
+        <a class="global-link" href="#">치과 외</a>
+        <a class="global-link-more" href="#">더 보기 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="partners">
+  <div class="inner" style="text-align:center;margin-bottom:16px;"><p style="font-size:11px;color:var(--gray-400);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;">인증 &amp; 협력 기관</p></div>
+  <div class="partners-track-wrap">
+    <div class="partners-track">
+      <div class="partner-logo">서울대학교</div><div class="partner-logo">보건복지부</div><div class="partner-logo">JCI</div><div class="partner-logo">ISO 9001</div><div class="partner-logo">FDI</div><div class="partner-logo">IADR</div><div class="partner-logo">WHO</div><div class="partner-logo">대한치과의사협회</div>
+      <div class="partner-logo">서울대학교</div><div class="partner-logo">보건복지부</div><div class="partner-logo">JCI</div><div class="partner-logo">ISO 9001</div><div class="partner-logo">FDI</div><div class="partner-logo">IADR</div><div class="partner-logo">WHO</div><div class="partner-logo">대한치과의사협회</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-top">
+    <div><img class="footer-logo-img" src="images/footer_logo.png" alt="SNUDH"><p class="footer-tagline">세계 정상을 선도하는 치과병원, 서울대학교치과병원</p></div>
+    <div class="footer-col"><h4>About</h4><a href="#">병원 소개</a><a href="#">의료진 소개</a><a href="#">연혁 및 인증</a><a href="#">사회공헌</a></div>
+    <div class="footer-col"><h4>Services</h4><a href="#">진료 예약</a><a href="#">진료과 안내</a><a href="#">온라인 강좌</a><a href="#">증명서 발급</a></div>
+    <div class="footer-col footer-contact"><h4>Contact</h4><p>(전화) 02-2072-2700<br>(팩스) 02-6240-5068</p><p style="margin-top:8px;">snudental@snuc.com</p><p style="margin-top:8px;color:rgba(255,255,255,.3);font-size:11px;">03080 서울특별시 종로구 대학로 101 (연건동)<br>©2024 SNUDH DRS ALL RIGHTS RESERVED.</p></div>
+  </div>
+  <div class="footer-bottom"><p>© 2024 Seoul National University Dental Hospital. All Rights Reserved.</p><p>개인정보처리방침 · 이용약관</p></div>
+</footer>
+
+<button class="btt" id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const header = document.getElementById('header');
+const btt = document.getElementById('btt');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 40);
+  btt.classList.toggle('visible', window.scrollY > 400);
+});
+
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+let cur = 0, timer;
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+function goTo(n) {
+  slides[cur].classList.remove('active'); dotsEl.children[cur].classList.remove('active');
+  cur = (n + slides.length) % slides.length;
+  slides[cur].classList.add('active'); dotsEl.children[cur].classList.add('active');
+  resetTimer();
+}
+function resetTimer() { clearInterval(timer); timer = setInterval(() => goTo(cur+1), 4500); }
+document.getElementById('prevBtn').onclick = () => goTo(cur-1);
+document.getElementById('nextBtn').onclick = () => goTo(cur+1);
+resetTimer();
+
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+}), {threshold: 0.1});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+function animCount(el) {
+  const target = +el.dataset.target, dur = 2000, start = performance.now();
+  const tick = now => {
+    const p = Math.min((now-start)/dur,1), ease = 1-Math.pow(1-p,3);
+    el.textContent = Math.floor(ease*target).toLocaleString();
+    if (p<1) requestAnimationFrame(tick); else el.textContent = target.toLocaleString();
+  };
+  requestAnimationFrame(tick);
+}
+const cio = new IntersectionObserver(entries => entries.forEach(e => {
+  if (e.isIntersecting) { animCount(e.target); cio.unobserve(e.target); }
+}), {threshold:0.3});
+document.querySelectorAll('.stat-number[data-target]').forEach(el => cio.observe(el));
+
+const notices = ['2035년도 교육수련 공고 — 대학원 입시 안내','2025년 봄 공개 강좌 수강 신청 접수 중','고령화 커뮤니티 지원 구강 건강 검진 실시','임플란트 신기술 세미나 — 3월 25일 개최'];
+const newsItems = ['서울대 치과병원, ESG 경영 대상 수상','디지털 덴티스트리 국제 학술대회 4월 개최','원격 진료 시스템 도입 — 지방 환자 편의 향상','2025년 첨단 임플란트 신기술 논문 발표'];
+function switchTab(el, type) {
+  document.querySelectorAll('.ticker-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const items = [...(type==='notice'?notices:newsItems),...(type==='notice'?notices:newsItems)];
+  document.getElementById('tickerText').innerHTML = items.map(t => `<span>${t}</span>`).join('');
+}
+</script>
+</body>
+</html>
